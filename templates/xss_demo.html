@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/xss" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>⚡ XSS (跨站脚本攻击) 演示</h1>
+    <div class="alert alert-danger">
+        <strong>⚠️ 危险环境</strong>
+        这是一个存在XSS漏洞的搜索框演示。请仅在学习和授权的测试环境中使用。
+    </div>
+
+    <div class="code-block" style="margin-bottom: 20px;">
+        <strong>易受攻击的代码：</strong>
+        <pre><code># 危险：直接输出用户输入，未经HTML转义
+return f'搜索结果: {keyword}'</code></pre>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <h3>🔍 搜索测试</h3>
+            <form method="POST" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label for="search">搜索关键词：</label>
+                    <input type="text" id="search" name="search" placeholder="输入搜索内容...（尝试输入<script>alert(1)</script>）" required>
+                </div>
+                <button type="submit" class="btn btn-danger">搜索</button>
+            </form>
+
+            {% if result %}
+            <div style="margin-top: 15px;">
+                <h4>搜索结果：</h4>
+                <div style="padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
+                    {{ result | safe }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <h3>💡 测试提示</h3>
+            <div class="code-block">
+                <p><strong>POC 测试示例：</strong></p>
+                <p>1. 基本XSS：<code><script>alert('XSS')</script></code></p>
+                <p>2. 图片XSS：<code><img src=x onerror=alert('XSS')></code></p>
+                <p>3. 事件处理器：<code><body onload=alert('XSS')></code></p>
+                <p>4. 编码绕过：<code><scr&i;pt>alert(1)</scr&i;pt></code></p>
+                <p>5. Unicode：<code>\u003cscript\u003ealert(1)\u003c/script\u003e</code></p>
+                <p style="margin-top: 10px;"><strong>修复方案：</strong></p>
+                <p>from flask import escape</p>
+                <p>return f'搜索结果: {escape(keyword)}'</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <h3>📚 相关知识</h3>
+        <div class="code-block">
+            <p><strong>XSS类型：</strong></p>
+            <ul style="margin-left: 20px;">
+                <li><strong>反射型XSS：</strong>恶意脚本通过URL反射回页面</li>
+                <li><strong>存储型XSS：</strong>恶意脚本存储在数据库中</li>
+                <li><strong>DOM型XSS：</strong>漏洞存在于客户端JS代码中</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>XSS危害：</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>窃取Cookie和会话信息</li>
+                <li>重定向到钓鱼网站</li>
+                <li>修改网页内容</li>
+                <li>键盘记录</li>
+                <li>劫持用户操作</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>防御措施：</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>HTML转义（escape）</li>
+                <li>使用模板引擎自动转义</li>
+                <li>输入过滤和净化（bleach）</li>
+                <li>Content Security Policy (CSP)</li>
+                <li>HttpOnly Cookie</li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px; padding: 15px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; color: #721c24;">
+        <strong>⚠️ 安全提醒：</strong>
+        <p>在上面的搜索框中，如果输入 <code><script>alert(document.cookie)</script></code>，会触发弹窗显示您的Cookie。这是因为没有对用户输入进行HTML转义。在实际应用中，这会让攻击者能够窃取用户的Cookie并劫持会话。</p>
+    </div>
+</div>
+{% endblock %}

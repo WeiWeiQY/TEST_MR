@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/{{ vuln_type }}" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>{{ title }}</h1>
+    <div class="alert alert-danger">
+        <strong>⚠️ 危险环境</strong>
+        {{ warning }}
+    </div>
+
+    {% if vulnerable_code %}
+    <div class="code-block" style="margin-bottom: 20px;">
+        <strong>易受攻击的代码：</strong>
+        <pre><code>{{ vulnerable_code }}</code></pre>
+    </div>
+    {% endif %}
+
+    {% block demo_content %}{% endblock %}
+
+    {% if poc_examples %}
+    <div style="margin-top: 30px;">
+        <h3>💡 测试提示</h3>
+        <div class="code-block">
+            <p><strong>POC 测试示例：</strong></p>
+            {% for example in poc_examples %}
+            <p>{{ loop.index }}. {{ example }}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if knowledge %}
+    <div style="margin-top: 30px;">
+        <h3>📚 相关知识</h3>
+        <div class="code-block">
+            {{ knowledge | safe }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

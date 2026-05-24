@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/csrf" class="btn btn-primary">查看详情</a>
+        {% if logged_in %}
+            <a href="/csrf/logout" class="btn btn-secondary">退出登录</a>
+        {% endif %}
+    </div>
+
+    <h1>🔐 CSRF (跨站请求伪造) 演示</h1>
+    <div class="alert alert-danger">
+        <strong>⚠️ 危险环境</strong>
+        密码修改功能没有CSRF token保护，可以进行CSRF攻击测试。
+    </div>
+
+    {% if logged_in %}
+        <div class="alert alert-success">
+            <strong>已登录用户：</strong> {{ username }}
+        </div>
+
+        <div class="code-block" style="margin-bottom: 20px;">
+            <strong>易受攻击的代码：</strong>
+            <pre><code># 危险：没有CSRF token验证
+def change_password():
+    new_password = request.form['new_password']
+    # 完全没有验证请求来源
+    session['password'] = new_password</code></pre>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <h3>📝 修改密码</h3>
+                <form method="POST" action="/csrf/change_password" style="margin-top: 15px;">
+                    <div class="form-group">
+                        <label for="new_password">新密码：</label>
+                        <input type="text" id="new_password" name="new_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">修改密码</button>
+                </form>
+                <div id="csrf-result" style="margin-top: 15px;"></div>
+            </div>
+
+            <div>
+                <h3>💡 CSRF攻击示例</h3>
+                <div class="code-block">
+                    <p><strong>创建恶意的CSRF攻击页面：</strong></p>
+                    <p><html></p>
+                    <p>&nbsp;&nbsp;<body onload="document.csrf.submit()"></p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;<form name="csrf" action="/csrf/change_password" method="POST"></p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="hidden" name="new_password" value="Hacked123"></p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;</form></p>
+                    <p>&nbsp;&nbsp;</body></p>
+                    <p></html></p>
+                    <p style="margin-top: 10px;"><strong>修复方案：</strong>使用CSRF Token</p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            尚未登录。请先登录以演示CSRF漏洞。
+        </div>
+        <a href="/csrf/login" class="btn btn-primary btn-lg" style="margin-top: 20px;">登录</a>
+    {% endif %}
+
+    <div style="margin-top: 30px;">
+        <h3>📚 相关知识</h3>
+        <div class="code-block">
+            <p><strong>CSRF攻击原理：</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>用户登录目标网站</li>
+                <li>用户访问恶意网站</li>
+                <li>恶意网站向目标网站发起请求（利用用户的cookie）</li>
+                <li>目标网站执行用户未授权的操作</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>防御措施：</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>CSRF Token</li>
+                <li>SameSite Cookie</li>
+                <li>验证Referer头</li>
+                <li>自定义验证头</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 处理密码修改表单
+    document.querySelector('form[action="/csrf/change_password"]').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        fetch('/csrf/change_password', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('csrf-result').innerHTML = 
+                `<div class="alert alert-info">${JSON.stringify(data, null, 2)}</div>`;
+        })
+        .catch(error => {
+            document.getElementById('csrf-result').innerHTML = 
+                `<div class="alert alert-danger">请求失败: ${error}</div>`;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/sqli" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>🗃️ SQL注入演示</h1>
+    <div class="alert alert-danger">
+        <strong>⚠️ 危险环境</strong>
+        这是一个存在SQL注入漏洞的登录表单演示。请仅在学习和授权的测试环境中使用。
+    </div>
+
+    <div class="code-block" style="margin-bottom: 20px;">
+        <strong>易受攻击的代码：</strong>
+        <pre><code>query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+cursor.execute(query)</code></pre>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <h3>📝 测试登录</h3>
+            <form method="POST" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label for="username">用户名：</label>
+                    <input type="text" id="username" name="username" value="admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码：</label>
+                    <input type="text" id="password" name="password" value="admin123" required>
+                </div>
+                <button type="submit" class="btn btn-danger">登录测试</button>
+            </form>
+        </div>
+
+        <div>
+            <h3>💡 测试提示</h3>
+            <div class="code-block">
+                <p><strong>POC 测试示例：</strong></p>
+                <p>1. 正常登录：admin / admin123</p>
+                <p>2. SQL注入绕过：' OR '1'='1 / ' OR '1'='1</p>
+                <p>3. 管理员登录：admin'-- / 任意密码</p>
+                <p>4. 特殊字符：admin' # / 任意密码</p>
+                <p style="margin-top: 10px;"><strong>修复方案：</strong>使用参数化查询</p>
+                <p>query = "SELECT * FROM users WHERE username = ? AND password = ?"</p>
+            </div>
+        </div>
+    </div>
+
+    {% if query %}
+    <div style="margin-top: 20px;">
+        <h3>执行查询</h3>
+        <div class="code-block">
+            <pre><code>{{ query }}</code></pre>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if result %}
+    <div style="margin-top: 20px;">
+        <h3>查询结果</h3>
+        <div class="alert {% if '成功' in result %}alert-success{% else %}alert-warning{% endif %}">
+            {{ result }}
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 30px;">
+        <h3>📚 相关知识</h3>
+        <div class="code-block">
+            <p><strong>SQL注入类型：</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>联合查询注入 (UNION Injection)</li>
+                <li>布尔盲注 (Boolean Blind)</li>
+                <li>时间盲注 (Time Blind)</li>
+                <li>错误注入 (Error Based)</li>
+                <li>堆叠查询 (Stacked Queries)</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>防御措施：</strong></p>
+            <ul style="margin-left: 20px;">
+                <li>使用参数化查询（Prepared Statements）</li>
+                <li>使用ORM框架</li>
+                <li>输入验证和过滤</li>
+                <li>最小权限原则</li>
+                <li>定期安全审计</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

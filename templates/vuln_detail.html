@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/{{ vuln_type }}/demo" class="btn btn-danger">💥 测试此漏洞</a>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <h1 style="color: #667eea;">{{ info.title }}</h1>
+        <p style="margin-top: 10px;">
+            严重程度：<span class="severity-badge severity-{{ info.severity }}">{{ info.severity }}</span>
+        </p>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('description')">📖 漏洞说明</div>
+        <div class="tab" onclick="showTab('poc')">💣 POC示例</div>
+        <div class="tab" onclick="showTab('vulnerable')">⚠️ 易受攻击代码</div>
+        <div class="tab" onclick="showTab('fixed')">✅ 修复代码</div>
+    </div>
+
+    <div id="description" class="tab-content active">
+        <h3>漏洞描述</h3>
+        <div class="code-block" style="background: #fff; white-space: pre-wrap;">{{ info.description }}</div>
+    </div>
+
+    <div id="poc" class="tab-content">
+        <h3>概念验证（POC）示例</h3>
+        <div class="alert alert-warning">
+            <strong>⚠️ 测试警告</strong>
+            这些POO示例仅用于教育和学习目的。请仅在您有明确授权的系统中使用。
+        </div>
+        <div class="code-block">{{ info.poc }}</div>
+    </div>
+
+    <div id="vulnerable" class="tab-content">
+        <h3>易受攻击的代码示例</h3>
+        <div class="alert alert-danger">
+            <strong>🚨 危险代码</strong>
+            以下示例展示了不安全的实现方式。不要在生产环境中使用这些代码！
+        </div>
+        <div class="code-block">{{ info.vulnerable_code }}</div>
+    </div>
+
+    <div id="fixed" class="tab-content">
+        <h3>修复后的安全代码</h3>
+        <div class="alert alert-success">
+            <strong>✅ 安全实现</strong>
+            以下示例展示了如何正确地修复漏洞。
+        </div>
+        <div class="code-block">{{ info.fixed_code }}</div>
+    </div>
+
+    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #667eea;">
+        <h3>💡 学习建议</h3>
+        <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+            <li>仔细阅读漏洞说明，理解漏洞的基本原理</li>
+            <li>查看POOC示例，了解攻击者可能如何利用此漏洞</li>
+            <li>对比易受攻击代码和修复代码，理解安全实践</li>
+            <li>使用演示功能进行实际测试，加深理解</li>
+            <li>在实际项目中应用安全编码实践</li>
+            <li>定期进行安全审计和渗透测试</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <h3>📚 相关资源</h3>
+        <ul style="margin-left: 20px; margin-top: 10px; line-height: 2;">
+            <li><a href="https://owasp.org/www-project-top-ten/" target="_blank" style="color: #667eea;">OWASP Top 10</a> - 最常见的Web应用安全风险</li>
+            <li><a href="https://cwe.mitre.org/" target="_blank" style="color: #667eea;">CWE (Common Weakness Enumeration)</a> - 常见弱点枚举</li>
+            <li><a href="https://portswigger.net/web-security" target="_blank" style="color: #667eea;">PortSwigger Web Security Academy</a> - 免费Web安全学习平台</li>
+        </ul>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="/{{ vuln_type }}/demo" class="btn btn-primary btn-lg" style="padding: 15px 30px; font-size: 16px;">
+            🧪 进入交互式演示环境
+        </a>
+    </div>
+</div>
+
+<script>
+    // 页面加载时默认显示第一个标签
+    document.addEventListener('DOMContentLoaded', function() {
+        showTab('description');
+    });
+</script>
+{% endblock %}

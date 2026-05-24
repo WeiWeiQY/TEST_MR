@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/command_injection" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>💻 命令注入演示</h1>
+    <div class="alert alert-danger">
+        <strong>⚠️ 危险环境</strong>
+        这是一个存在命令注入漏洞的ping工具演示。请仅在学习和授权的测试环境中使用。
+    </div>
+
+    <div class="code-block" style="margin-bottom: 20px;">
+        <strong>易受攻击的代码：</strong>
+        <pre><code># 危险：直接拼接用户输入到命令
+command = f"ping -c 3 {ip_address}"
+subprocess.run(command, shell=True)</code></pre>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <h3>🎯 Ping测试</h3>
+            <form method="POST" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label for="ip">IP地址：</label>
+                    <input type="text" id="ip" name="ip" value="127.0.0.1" required>
+                </div>
+                <button type="submit" class="btn btn-danger">执行Ping</button>
+            </form>
+
+            {% if command %}
+            <div style="margin-top: 15px;">
+                <h4>执行命令：</h4>
+                <div class="code-block">{{ command }}</div>
+            </div>
+            {% endif %}
+
+            {% if output %}
+            <div style="margin-top: 15px;">
+                <h4>执行结果：</h4>
+                <div style="padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; max-height: 300px; overflow-y: auto;">
+                    <pre style="margin: 0; white-space: pre-wrap;">{{ output }}</pre>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <h3>💡 测试提示</h3>
+            <div class="code-block">
+                <p><strong>POC 测试示例：</strong></p>
+                <p>1. 基本命令注入：<code>127.0.0.1; whoami</code></p>
+                <p>2. 与操作符：<code>127.0.0.1 && ls -la</code></p>
+                <p>3. 管道符：<code>127.0.0.1 | cat /etc/passwd</code></p>
+                <p>4. 反引号：<code>127.0.0.1 `cat /etc/passwd`</code></p>
+                <p style="margin-top: 10px;"><strong>修复方案：</strong></p>
+                <p>import re</p>
+                <p>import subprocess</p>
+                <p># 验证输入</p>
+                <p>if not re.match(r'^[0-9.]+$', ip_address):</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;raise ValueError('无效的IP地址')</p>
+                <p># 不使用shell=True</p>
+                <p>subprocess.run(['ping', '-c', '3', ip_address])</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

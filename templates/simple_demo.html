@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/{{ vuln_type }}" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>{{ title }}</h1>
+    <div class="alert alert-danger">⚠️ 危险环境：{{ warning }}</div>
+
+    <div class="code-block">
+        <strong>易受攻击的代码：</strong>
+        <pre><code>{{ vulnerable_code }}</code></pre>
+    </div>
+
+    {% block demo_content %}{% endblock %}
+
+    <div class="code-block" style="margin-top: 20px;">
+        <p><strong>测试提示：</strong></p>
+        {% for tip in tips %}
+        <p>{{ loop.index }}. {{ tip }}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
