@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+    </div>
+
+    <h1>🔐 CSRF演示 - 登录</h1>
+    <div class="alert alert-warning">
+        这是CSRF漏洞演示的登录页面。登录后将测试没有CSRF保护的密码修改功能。
+    </div>
+
+    <form method="POST" style="max-width: 400px; margin-top: 30px;">
+        <div class="form-group">
+            <label for="username">用户名：</label>
+            <input type="text" id="username" name="username" required placeholder="输入任意用户名">
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">登录</button>
+    </form>
+
+    <div class="code-block" style="margin-top: 30px;">
+        <p><strong>说明：</strong></p>
+        <p>• 登录后可以进行密码修改测试</p>
+        <p>• 密码修改功能没有CSRF token保护</p>
+        <p>• 可以构造恶意页面进行跨站请求伪造攻击</p>
+    </div>
+</div>
+{% endblock %}

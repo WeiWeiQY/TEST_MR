@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/ssrf" class="btn btn-primary">查看详情</a>
+    </div>
+    <h1>🌐 SSRF (服务端请求伪造) 演示</h1>
+    <div class="alert alert-danger">⚠️ 危险环境：没有URL验证的SSRF漏洞</div>
+    <form method="POST">
+        <input type="text" name="url" placeholder="输入URL (例如: http://127.0.0.1:80)" required style="width: 100%; padding: 10px; margin-top: 10px;">
+        <button type="submit" class="btn btn-danger" style="margin-top: 10px;">请求URL</button>
+    </form>
+    {% if result %}
+    <div class="code-block" style="margin-top: 20px;">
+        <pre>{{ result | safe }}</pre>
+    </div>
+    {% endif %}
+    <div class="code-block" style="margin-top: 20px;">
+        <p><strong>POC示例：</strong></p>
+        <p>• http://127.0.0.1:22 (SSH端口)</p>
+        <p>• http://127.0.0.1:3306 (MySQL端口)</p>
+        <p>• http://169.254.169.254/latest/ (AWS元数据)</p>
+    </div>
+</div>
+{% endblock %}

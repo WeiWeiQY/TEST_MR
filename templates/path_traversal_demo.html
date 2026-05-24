@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/path_traversal" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>📁 路径遍历漏洞演示</h1>
+    <div class="alert alert-danger">
+        <strong>⚠️ 危险环境</strong>
+        存在路径遍历漏洞，允许访问任意文件，请仅在授权环境测试。
+    </div>
+
+    <div class="code-block" style="margin-bottom: 20px;">
+        <strong>易受攻击的代码：</strong>
+        <pre><code># 危险：直接拼接文件路径，未验证
+filepath = os.path.join('data', filename)
+with open(filepath) as f:
+    content = f.read()</code></pre>
+    </div>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="filename">文件名：</label>
+            <input type="text" id="filename" name="filename" value="readme.txt" required>
+        </div>
+        <button type="submit" class="btn btn-danger">读取文件</button>
+    </form>
+
+    {% if content %}
+    <div style="margin-top: 20px;">
+        <h4>文件内容：</h4>
+        <div style="padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; max-height: 400px; overflow-y: auto;">
+            <pre style="margin: 0; white-space: pre-wrap;">{% if content is mapping %}{{ content | safe }}{% else %}{{ content }}{% endif %}</pre>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="code-block" style="margin-top: 20px;">
+        <p><strong>POC测试示例：</strong></p>
+        <p>1. 路径遍历读取敏感文件：</p>
+        <p>• ../../../../etc/passwd</p>
+        <p>• ../../data/files/readme.txt</p>
+        <p>2. URL编码绕过：</p>
+        <p>• %2e%2e%2fetc%2fpasswd</p>
+        <p>3. 使用绝对路径：</p>
+        <p>• /etc/passwd</p>
+        <p style="margin-top: 10px;"><strong>修复方案：</strong>使用safe_join验证路径</p>
+    </div>
+</div>
+{% endblock %}

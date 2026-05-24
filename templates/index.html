@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <h2>📋 漏洞列表</h2>
+    <p style="margin-bottom: 30px;">选择一个漏洞类型来查看详细信息和交互式演示</p>
+    
+    <div class="vulnerabilities-grid">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8f9fa;">
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">漏洞名称</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">描述</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">严重程度</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #667eea;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vuln in vulnerabilities %}
+                <tr style="border-bottom: 1px solid #dee2e6;">
+                    <td style="padding: 12px; font-weight: 500;">
+                        <strong>{{ vuln.name }}</strong>
+                    </td>
+                    <td style="padding: 12px; color: #666;">{{ vuln.description }}</td>
+                    <td style="padding: 12px;">
+                        <span class="severity-badge severity-{{ vuln.severity }}">{{ vuln.severity }}</span>
+                    </td>
+                    <td style="padding: 12px;">
+                        <a href="/vuln/{{ vuln.route }}" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px;">查看详情</a>
+                        <a href="/{{ vuln.route }}/demo" class="btn btn-danger" style="padding: 6px 12px; font-size: 13px;">演示</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 40px;">
+        <h3>📖 使用说明</h3>
+        <div class="code-block" style="margin-top: 15px;">
+            <p>1. 点击"查看详情"了解漏洞原理、POC示例和修复方案</p>
+            <p>2. 点击"演示"进入交互式漏洞测试环境</p>
+            <p>3. 每个漏洞详情页面包含：</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>漏洞说明：详细的漏洞原理介绍</li>
+                <li>POC示例：可执行的攻击示例代码</li>
+                <li>易受攻击代码：不安全的实现示例</li>
+                <li>修复代码：安全解决方案</li>
+            </ul>
+            <p style="margin-top: 10px;">4. ⚠️ 所有演示都是在受控环境中进行，请勿用于非法用途</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 5px;">
+        <h3>🎯 快速开始</h3>
+        <p style="margin-top: 10px;">推荐学习路径：</p>
+        <ol style="margin-left: 20px; margin-top: 10px;">
+            <li><strong>SQL注入</strong> - 最常见且最危险的漏洞之一</li>
+            <li><strong>XSS (跨站脚本)</strong> - 客户端攻击的经典案例</li>
+            <li><strong>文件上传</strong> - 服务器端文件操作漏洞</li>
+            <li><strong>命令注入</strong> - 系统级别漏洞</li>
+            <li><strong>CSRF</strong> - 社会工程学攻击</li>
+        </ol>
+    </div>
+</div>
+{% endblock %}

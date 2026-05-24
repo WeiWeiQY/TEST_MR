@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div style="margin-bottom: 20px;">
+        <a href="/" class="btn btn-primary">← 返回首页</a>
+        <a href="/vuln/file_upload" class="btn btn-primary">查看详情</a>
+    </div>
+
+    <h1>📤 文件上传漏洞演示</h1>
+    <div class="alert alert-danger">⚠️ 危险环境：存在任意文件上传漏洞，请仅在授权环境测试</div>
+
+    <div class="code-block">
+        <strong>易受攻击的代码：</strong>
+        <pre><code># 危险：没有验证文件类型
+filename = file.filename
+file.save(f'uploads/{filename}')</code></pre>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" style="margin-top: 20px;">
+        <div class="form-group">
+            <label for="file">选择文件：</label>
+            <input type="file" id="file" name="file" required>
+        </div>
+        <button type="submit" class="btn btn-danger">上传文件</button>
+    </form>
+
+    {% if message %}
+    <div class="alert {% if '成功' in message %}alert-success{% else %}alert-warning{% endif %}" style="margin-top: 15px;">
+        {{ message }}
+    </div>
+    {% endif %}
+
+    {% if uploaded_file %}
+    <div class="alert alert-info">
+        上传的文件：<a href="/uploads/{{ uploaded_file }}" target="_blank">/uploads/{{ uploaded_file }}</a>
+    </div>
+    {% endif %}
+
+    <div class="code-block" style="margin-top: 20px;">
+        <p><strong>测试提示：</strong></p>
+        <p>可以尝试上传.php、.jsp、.sh等类型的恶意文件</p>
+        <p><strong>修复方案：</strong>验证扩展名、MIME类型和文件内容</p>
+    </div>
+</div>
+{% endblock %}
